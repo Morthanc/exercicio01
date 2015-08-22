@@ -4,6 +4,11 @@
  * and open the template in the editor.
  */
 package br.senac.tads.pi3.uriel.exercicio01;
+import java.awt.HeadlessException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Scanner;
 /**
  *
@@ -14,6 +19,43 @@ public class exercicios01 {
     
     
     public static Scanner teclado = new Scanner(System.in);
+    
+     String connectionUrl = "jdbc:sqlserver://localhost:1433;\" +\n"
+            + "      \"databaseName=db1;user=usuarioDB;password=1234";
+     
+     
+     public boolean conexaoDb() {
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+
+            Connection conn = DriverManager.getConnection(connectionUrl);
+
+            System.out.println("Conexão obtida com sucesso.");
+
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO dbo.info (nome, email, telefone, dataNascto)"
+                    + "VALUES (?, ?, ?, ?)");
+            ps.setString(1, getNome()); // atribui o valor que usuário coloca a coluna NOME
+            
+
+            int result = ps.executeUpdate();
+            
+            
+           return true;
+        } catch (SQLException ex) {
+
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return false;
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | HeadlessException e) {
+            System.out.println("Problemas ao tentar conectar com o banco de dados: " + e);
+            
+            return false;
+        }
+    }
+
+
+
     
     public static void main(String args[]){
        String nome,email,telefone,dataNasct;
