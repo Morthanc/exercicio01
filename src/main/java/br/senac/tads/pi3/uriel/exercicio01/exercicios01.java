@@ -10,13 +10,42 @@ import java.util.Scanner;
  * @author uriel.pgoliveira
  */
 public class exercicios01 {
+    
+    
+    
     public static Scanner teclado = new Scanner(System.in);
     
     public static void main(String args[]){
        String nome,email,telefone,dataNasct;
        byte cod=0;
-       
-       
+       /*
+         String connectionUrl = "jdbc:sqlserver://192.168.0.1:1433;databaseName=bd1;user=usuario;password=senha";
+
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+            // Abre a conexão
+            Connection conn = DriverManager.getConnection(connectionUrl);
+          
+            System.out.println("Conexão obtida com sucesso.");
+                   
+            // Exemplo de UPDATE... pode ser adaptado facilmente para um INSERT ou DELETE
+            PreparedStatement ps =conn.prepareStatement(""); // Os pontos de interrogação serão substituídos pelos conteúdos....
+            ps.setString(1, txtData.getText()); // desta caixa de texto
+            ps.setString(2, txtCodigo.getText()); // e esta caixa nesta ordem.
+            int result=ps.executeUpdate();
+            }
+            
+        
+        catch (SQLException ex) {
+            // Se ocorrem erros de conexão
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        catch (Exception e) {
+            // se ocorrerem outros erros
+            System.out.println("Problemas ao tentar conectar com o banco de dados: " + e);
+        }*/
        
        do {
            
