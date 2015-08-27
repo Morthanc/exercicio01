@@ -1,14 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.senac.tads.pi3.uriel.exercicio01;
-import java.awt.HeadlessException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Scanner;
 /**
  *
@@ -16,88 +19,32 @@ import java.util.Scanner;
  */
 public class exercicios01 {
     
+     private Connection obterConexao() throws SQLException, ClassNotFoundException {
+    Connection conn = null;
+    // Passo 1: Registrar driver JDBC.
+    Class.forName("org.apache.derby.jdbc.ClientDataSource");
+
+    // Passo 2: Abrir a conexão
+    conn = DriverManager.getConnection("jdbc:derby://localhost:1527/agendabd;SecurityMechanism=3",
+            "app", // usuario
+            "app"); // senha
+    return conn;
+  }
     
     
     public static Scanner teclado = new Scanner(System.in);
     
-     String connectionUrl = "jdbc:sqlserver://localhost:1433;\" +\n"
-            + "      \"databaseName=db1;user=usuarioDB;password=1234";
+    /* String connectionUrl = "jdbc:sqlserver://localhost:1433;\" +\n"
+            + "      \"databaseName=db1;user=usuarioDB;password=1234";*/
      
      
-     public boolean conexaoDb() {
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
+   
 
-            Connection conn = DriverManager.getConnection(connectionUrl);
-
-            System.out.println("Conexão obtida com sucesso.");
-
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO dbo.info (nome, email, telefone, dataNascto)"
-                    + "VALUES (?, ?, ?, ?)");
-            ps.setString(1, getNome()); // atribui o valor que usuário coloca a coluna NOME
-            
-
-            int result = ps.executeUpdate();
-            
-            
-           return true;
-        } catch (SQLException ex) {
-
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-            return false;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | HeadlessException e) {
-            System.out.println("Problemas ao tentar conectar com o banco de dados: " + e);
-            
-            return false;
-        }
-    }
-
-
-
-    
-    public static void main(String args[]){
-       String nome,email,telefone,dataNasct;
-       byte cod=0;
-       /*
-         String connectionUrl = "jdbc:sqlserver://192.168.0.1:1433;databaseName=bd1;user=usuario;password=senha";
-
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
-            // Abre a conexão
-            Connection conn = DriverManager.getConnection(connectionUrl);
-          
-            System.out.println("Conexão obtida com sucesso.");
-                   
-            // Exemplo de UPDATE... pode ser adaptado facilmente para um INSERT ou DELETE
-            PreparedStatement ps =conn.prepareStatement(""); // Os pontos de interrogação serão substituídos pelos conteúdos....
-            ps.setString(1, txtData.getText()); // desta caixa de texto
-            ps.setString(2, txtCodigo.getText()); // e esta caixa nesta ordem.
-            int result=ps.executeUpdate();
-            }
-            
+    public void cadastro(){
+        PreparedStatement ps = null;
+        Connection conn = null;
+        String nome,email,telefone,dataNasct;
         
-        catch (SQLException ex) {
-            // Se ocorrem erros de conexão
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        catch (Exception e) {
-            // se ocorrerem outros erros
-            System.out.println("Problemas ao tentar conectar com o banco de dados: " + e);
-        }*/
-       
-       do {
-           
-           System.out.println("Deseja realizar o cadastro?\n"
-                   + "Digite 1 para sim\n"
-                   + "Digite 2 para sair\n");
-           cod = teclado.nextByte();
-           
-           
-           
             System.out.println("Digite seu nome: ");
             nome = teclado.nextLine();
             teclado.next();
@@ -114,7 +61,137 @@ public class exercicios01 {
             dataNasct = teclado.nextLine();
             teclado.next();
             
-       } while(cod!=2);
+            try {
+                    conn = obterConexao();
+                    ps = conn.prepareStatement("INSERT INTO TB_PESSOA (NM_PESSOA, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL) VALUES (?, ?, ?, ?)");
+                    ps.setString(1, nome);
+                    ps.setString(2, email);
+                    ps.setString(3, telefone);
+                    ps.setString(4, dataNasct);
+                    //stmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
+                    ps.executeUpdate();
+                    System.out.println("Registro incluido com sucesso.");
+            }
+     catch (SQLException ex) 
+    {
+      Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+            catch (ClassNotFoundException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally 
+            {
+                if (ps != null) {
+                    try 
+                    {
+                        ps.close();
+                    }           
+                    catch (SQLException ex) 
+                    {
+                        Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                                }
+      if (conn != null) 
+      {
+        try 
+        {
+          conn.close();
+        } 
+            catch (SQLException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                            
+        
+      }     
+        }
+           }
+    
+    public void listagem(){
+        Statement s = null;
+        Connection conn = null;
+        
+        try {
+      conn = obterConexao();
+      s = conn.createStatement();
+      ResultSet resultados = s.executeQuery("SELECT ID_PESSOA, NM_PESSOA, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL FROM TB_PESSOA");
+
+      DateFormat formatadorData = new SimpleDateFormat("dd/MM/yyyy");
+
+      while (resultados.next()) {
+        Long id = resultados.getLong("ID_PESSOA");
+        String nome = resultados.getString("NM_PESSOA");
+        String dataNasct = resultados.getString("DT_NASCIMENTO");
+        String email = resultados.getString("VL_EMAIL");
+        String telefone = resultados.getString("VL_TELEFONE");
+        System.out.println(String.valueOf(id) + ", " + nome + ", " + dataNasct + ", " + email + ", " + telefone);
+      }
+
+    } catch (SQLException ex) 
+    {
+      Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+            catch (ClassNotFoundException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally 
+            {
+                if (s != null) {
+                    try 
+                    {
+                        s.close();
+                    }           
+                    catch (SQLException ex) 
+                    {
+                        Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                                }
+      if (conn != null) 
+      {
+        try 
+        {
+          conn.close();
+        } 
+            catch (SQLException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                            
+        
+      }     
+        }
+           }
+    
+    
+    public static void main(String args[]){
+       byte cod=0;
+       exercicios01 app = new exercicios01();
+       /*
+         String connectionUrl = "jdbc:sqlserver://192.168.0.1:1433;databaseName=bd1;user=usuario;password=senha";
+*/
+       
+       do {
+           
+           System.out.println("Bem vindo ao sistema de cadastro!\n"
+                   + "Digite 1 para cadastrar\n"
+                   + "Digite 2 para listar\n"
+                   + "Digite 3 para sair\n");
+                    cod = teclado.nextByte();
+        
+                    if (cod==1)
+                    {
+                        app.cadastro();
+                    }
+                    
+                    else if (cod==2)
+                    {
+                        
+                    }
+            
+            
+       } while(cod!=3);
                 
         
     }
