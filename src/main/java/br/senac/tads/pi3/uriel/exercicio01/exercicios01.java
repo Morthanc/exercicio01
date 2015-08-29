@@ -108,6 +108,148 @@ public class exercicios01 {
         }
            }
     
+    
+    
+    public void modificar(){
+        PreparedStatement ps = null;
+        Connection conn = null;
+        String nome,email,telefone,dataNasct;
+        	
+        	System.out.println("Digite os dados a serem atualizados: \n");
+        	
+        	System.out.println("Digite o Id com dados a serem atualizados: ");
+        	int id = teclado.nextInt();	
+        	
+            System.out.println("Digite seu nome: ");
+            nome = teclado.nextLine();
+            teclado.next();
+            
+            System.out.println("Digite seu email: ");
+            email = teclado.nextLine();
+            teclado.next();
+            
+            System.out.println("Digite seu telefone: ");
+            telefone = teclado.nextLine();
+            teclado.next();
+            
+            System.out.println("Digite a data de nascimento (DD/MM/AA): ");
+            dataNasct = teclado.nextLine();
+            teclado.next();
+            
+            try {//(NM_PESSOA, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL) VALUES (?, ?, ?, ?, ?)
+                    conn = obterConexao();
+                    ps = conn.prepareStatement("UPDA	ENTO = ?, VL_TELEFONE = ?, VL_EMAIL=? WHERE ID_PESSOA = ?");
+                    ps.setString(1, nome);
+                    ps.setString(2, email);
+                    ps.setString(3, telefone);
+                    ps.setString(4, dataNasct);
+                    ps.setInt(5, id);	
+                    ps.executeUpdate();
+                    System.out.println("Registro atualizado com sucesso.");
+            }
+     catch (SQLException ex) 
+    {
+      Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+            catch (ClassNotFoundException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally 
+            {
+                if (ps != null) {
+                    try 
+                    {
+                        ps.close();
+                    }           
+                    catch (SQLException ex) 
+                    {
+                        Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                                }
+      if (conn != null) 
+      {
+        try 
+        {
+          conn.close();
+        } 
+            catch (SQLException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                            
+        
+      }     
+        }
+           }
+
+    public void excluir(){
+        PreparedStatement ps = null;
+        Connection conn = null;
+                	       	       	
+        	System.out.println("Digite o Id com dados a ser deletado: ");
+        	int id = teclado.nextInt();	
+        	byte opcao;
+        	
+        	System.out.println("Tem certeza?\n" +
+        			"Digite 1 para 'sim', 2 para 'não' e 3 para voltar");
+        	opcao = teclado.nextByte();
+        	
+        	if (opcao==1){
+        	
+                      
+            try {//(NM_PESSOA, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL) VALUES (?, ?, ?, ?, ?)
+                    conn = obterConexao();
+                    ps = conn.prepareStatement("DELETE * FROM TB_PESSOA WHERE ID_PESSOA = ?");
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                    System.out.println("Registro atualizado com sucesso.\n");
+            }
+     catch (SQLException ex) 
+    {
+      Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+            catch (ClassNotFoundException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally 
+            {
+                if (ps != null) {
+                    try 
+                    {
+                        ps.close();
+                    }           
+                    catch (SQLException ex) 
+                    {
+                        Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                                }
+      if (conn != null) 
+      {
+        try 
+        {
+          conn.close();
+        } 
+            catch (SQLException ex) 
+            {
+                Logger.getLogger(exercicios01.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                            
+        
+      }     
+        }
+           }
+        	else if (opcao==2){
+            	System.out.println("");
+            }
+        	else {
+        		System.out.println("Opção inválida");
+        	}
+        	
+    }
+    
+    
     public void listagem(){
         Statement s = null;
         Connection conn = null;
